@@ -20,14 +20,13 @@ fi
 #TOMCAT=""
 
 # Grab a password for MySQL Root
-read -s -p "Enter the password that will be used for MySQL Root: " mysqlrootpassword
-echo
+mysqlrootpassword="rootpass"
 debconf-set-selections <<< "mysql-server mysql-server/root_password password $mysqlrootpassword"
 debconf-set-selections <<< "mysql-server mysql-server/root_password_again password $mysqlrootpassword"
 
 # Grab a password for Guacamole database user account
-read -s -p "Enter the password that will be used for the Guacamole database: " guacdbuserpassword
-echo
+#read -s -p "Enter the password that will be used for the Guacamole database: " guacdbuserpassword
+guacdbuserpassword="rootpass"
 
 # Ubuntu and Debian have different names of the libjpeg-turbo library for some reason...
 if [ `egrep -c "ID=ubuntu" /etc/os-release` -gt 0 ]
