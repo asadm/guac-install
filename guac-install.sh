@@ -2,7 +2,7 @@
 
 # Version numbers of Guacamole and MySQL Connector/J to download
 VERSION="0.9.13"
-MCJVERSION="5.1.43"
+#MCJVERSION="5.1.43"
 
 # Update apt so we can search apt-cache for newest tomcat version supported
 apt update
@@ -20,9 +20,9 @@ fi
 #TOMCAT=""
 
 # Grab a password for MySQL Root
-mysqlrootpassword="rootpass"
-debconf-set-selections <<< "mysql-server mysql-server/root_password password $mysqlrootpassword"
-debconf-set-selections <<< "mysql-server mysql-server/root_password_again password $mysqlrootpassword"
+#mysqlrootpassword="rootpass"
+#debconf-set-selections <<< "mysql-server mysql-server/root_password password $mysqlrootpassword"
+#debconf-set-selections <<< "mysql-server mysql-server/root_password_again password $mysqlrootpassword"
 
 # Grab a password for Guacamole database user account
 #read -s -p "Enter the password that will be used for the Guacamole database: " guacdbuserpassword
@@ -60,13 +60,13 @@ echo "GUACAMOLE_HOME=/etc/guacamole" >> /etc/default/${TOMCAT}
 # Download Guacamole files
 wget ${SERVER}/incubator/guacamole/${VERSION}-incubating/source/guacamole-server-${VERSION}-incubating.tar.gz
 wget ${SERVER}/incubator/guacamole/${VERSION}-incubating/binary/guacamole-${VERSION}-incubating.war
-wget ${SERVER}/incubator/guacamole/${VERSION}-incubating/binary/guacamole-auth-jdbc-${VERSION}-incubating.tar.gz
-wget https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-${MCJVERSION}.tar.gz
+#wget ${SERVER}/incubator/guacamole/${VERSION}-incubating/binary/guacamole-auth-jdbc-${VERSION}-incubating.tar.gz
+#wget https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-${MCJVERSION}.tar.gz
 
 # Extract Guacamole files
 tar -xzf guacamole-server-${VERSION}-incubating.tar.gz
-tar -xzf guacamole-auth-jdbc-${VERSION}-incubating.tar.gz
-tar -xzf mysql-connector-java-${MCJVERSION}.tar.gz
+#tar -xzf guacamole-auth-jdbc-${VERSION}-incubating.tar.gz
+#tar -xzf mysql-connector-java-${MCJVERSION}.tar.gz
 
 # Make directories
 mkdir -p /etc/guacamole/lib
@@ -85,15 +85,15 @@ cd ..
 mv guacamole-${VERSION}-incubating.war /etc/guacamole/guacamole.war
 ln -s /etc/guacamole/guacamole.war /var/lib/${TOMCAT}/webapps/
 ln -s /usr/local/lib/freerdp/guac*.so /usr/lib/${BUILD_FOLDER}/freerdp/
-cp mysql-connector-java-${MCJVERSION}/mysql-connector-java-${MCJVERSION}-bin.jar /etc/guacamole/lib/
-cp guacamole-auth-jdbc-${VERSION}-incubating/mysql/guacamole-auth-jdbc-mysql-${VERSION}-incubating.jar /etc/guacamole/extensions/
+#cp mysql-connector-java-${MCJVERSION}/mysql-connector-java-${MCJVERSION}-bin.jar /etc/guacamole/lib/
+#cp guacamole-auth-jdbc-${VERSION}-incubating/mysql/guacamole-auth-jdbc-mysql-${VERSION}-incubating.jar /etc/guacamole/extensions/
 
 # Configure guacamole.properties
-echo "mysql-hostname: localhost" >> /etc/guacamole/guacamole.properties
-echo "mysql-port: 3306" >> /etc/guacamole/guacamole.properties
-echo "mysql-database: guacamole_db" >> /etc/guacamole/guacamole.properties
-echo "mysql-username: guacamole_user" >> /etc/guacamole/guacamole.properties
-echo "mysql-password: $guacdbuserpassword" >> /etc/guacamole/guacamole.properties
+# echo "mysql-hostname: localhost" >> /etc/guacamole/guacamole.properties
+# echo "mysql-port: 3306" >> /etc/guacamole/guacamole.properties
+# echo "mysql-database: guacamole_db" >> /etc/guacamole/guacamole.properties
+# echo "mysql-username: guacamole_user" >> /etc/guacamole/guacamole.properties
+# echo "mysql-password: $guacdbuserpassword" >> /etc/guacamole/guacamole.properties
 rm -rf /usr/share/${TOMCAT}/.guacamole
 ln -s /etc/guacamole /usr/share/${TOMCAT}/.guacamole
 
@@ -103,18 +103,18 @@ service ${TOMCAT} restart
 # Create guacamole_db and grant guacamole_user permissions to it
 
 # SQL code
-SQLCODE="
-create database guacamole_db;
-create user 'guacamole_user'@'localhost' identified by \"$guacdbuserpassword\";
-GRANT SELECT,INSERT,UPDATE,DELETE ON guacamole_db.* TO 'guacamole_user'@'localhost';
-flush privileges;"
+# SQLCODE="
+# create database guacamole_db;
+# create user 'guacamole_user'@'localhost' identified by \"$guacdbuserpassword\";
+# GRANT SELECT,INSERT,UPDATE,DELETE ON guacamole_db.* TO 'guacamole_user'@'localhost';
+# flush privileges;"
 
-# Execute SQL code
-echo $SQLCODE | mysql -u root -p$mysqlrootpassword
+# # Execute SQL code
+# echo $SQLCODE | mysql -u root -p$mysqlrootpassword
 
-# Add Guacamole schema to newly created database
-cat guacamole-auth-jdbc-${VERSION}-incubating/mysql/schema/*.sql | mysql -u root -p$mysqlrootpassword guacamole_db
+# # Add Guacamole schema to newly created database
+# cat guacamole-auth-jdbc-${VERSION}-incubating/mysql/schema/*.sql | mysql -u root -p$mysqlrootpassword guacamole_db
 
 # Cleanup
 rm -rf guacamole-*
-rm -rf mysql-connector-java-${MCJVERSION}*
+#rm -rf mysql-connector-java-${MCJVERSION}*
